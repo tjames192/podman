@@ -1,0 +1,24 @@
+# mailpit As YAML Configuration File
+http:
+  routers:
+    router-mailpit:
+      rule: "Host(`mailpit.domain.com`)"
+      service: mailpit
+  services:
+    mailpit:
+      loadBalancer:
+        servers:
+        - url: "http://localhost:8025/"
+#http://mailpit.domain.com/
+tcp:
+  routers:
+    router-relay:
+      rule: "HostSNI(`*`)"
+      entryPoints:
+        - "smtp"
+      service: relay
+  services:
+    relay:
+      loadBalancer:
+        servers:
+         - address: "localhost:1025"
