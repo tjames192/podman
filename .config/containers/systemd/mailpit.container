@@ -1,0 +1,17 @@
+[Unit]
+Description=mailpit
+After=local-fs.target mailpit-build.service
+Wants=mailpit-build.service
+
+[Container]
+Image=localhost/mailpit:latest
+AutoUpdate=local
+Volume=/home/podman/source/mailpit/mailpit/:/etc/mailpit:Z
+PublishPort=1025:1025
+PublishPort=1110:1110
+PublishPort=8025:8025
+Exec=--disable-version-check --verbose --max 80000 --max-age 32d --smtp-relay-all --smtp-relay-config /etc/mailpit/smtp-relay-config.conf
+
+[Install]
+# Start by default on boot
+WantedBy=multi-user.target default.target
