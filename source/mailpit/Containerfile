@@ -1,0 +1,31 @@
+FROM cgr.dev/chainguard/wolfi-base AS build
+
+RUN apk update && apk add --no-cache mailpit
+RUN which mailpit
+
+FROM cgr.dev/chainguard/static
+
+COPY --from=build /usr/bin/mailpit /usr/bin/mailpit
+
+EXPOSE 1025/tcp 1110/tcp 8025/tcp
+
+# podman 4.3.1 does not implement start-interval
+# HEALTHCHECK --interval=15s --start-period=10s --start-interval=1s CMD ["/mailpit", "readyz"]
+
+HEALTHCHECK --interval=15s --start-period=10s CMD ["/usr/bin/mailpit", "readyz"]
+
+# Using a Containerfile to configure /var/logs in a container is a poor practice 
+# and should be avoided in most scenarios. 
+# The best practice is to have applications inside the container write logs to stdout and stderr instead of files. 
+# A container orchestrator like Docker or Kubernetes then captures these streams and handles the logging for you
+
+# For modern containerized applications, logging to stdout and stderr is the standard. 
+# This approach works with Docker's default logging mechanism, 
+# which collects these streams and stores them in JSON files on the host system
+
+# Use a symbolic link to redirect the log files to stdout/stderr
+# This is a common pattern for applications not originally designed for containers.
+#RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
+#    ln -sf /dev/stderr /var/log/nginx/error.log
+
+ENTRYPOINT ["/usr/bin/mailpit"]
