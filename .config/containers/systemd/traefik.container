@@ -1,0 +1,16 @@
+[Unit]
+Description=traefik
+After=local-fs.target
+
+[Container]
+Image=localhost/traefik:latest
+Volume=/home/podman/source/traefik/traefik/:/etc/traefik:Z
+Volume=/home/podman/source/traefik/traefik/acme.json:/acme.json
+PublishPort=80:80
+PublishPort=443:443
+PublishPort=8080:8080
+PublishPort=25:25
+
+[Install]
+# Start by default on boot
+WantedBy=multi-user.target default.target
