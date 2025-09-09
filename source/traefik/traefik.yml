@@ -1,0 +1,12 @@
+providers:
+  file:
+    directory: /etc/traefik/dynamic/
+api:
+  insecure: true
+entrypoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+  smtp:
+    address: ":25/tcp"
